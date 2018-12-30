@@ -1,7 +1,7 @@
 {
   "name": "scrute",
   "version": "0.0.1",
-  "description": "A TypeScript/JS library for scrutinizing deep object changes",
+  "description": "A TypeScript/JS library for observing changes and adding computed properties",
   "main": "umd/scrute.js",
   "module": "lib/index.js",
   "es2015": "lib-esm/index.js",
