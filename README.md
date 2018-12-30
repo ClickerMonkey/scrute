@@ -2,7 +2,8 @@
 
 `scrute` allows you to *scrutinize* your data and watch it for changes. You can also add properties to objects which are a computed value based on watched values.
 
-```
+```javascript
+// when using in plain JS, scrute.observe, scrute.watch, and scrute.computed are available.
 
 import { observe, watch, computed } from 'scrute';
 
