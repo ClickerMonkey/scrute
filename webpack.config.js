@@ -6,7 +6,7 @@ const { getIfUtils, removeEmpty } = require('webpack-config-utils')
 const packageJSON = require('./package.json')
 const packageName = 'scrute';
 
-const LIB_NAME = pascalCase(packageName)
+const LIB_NAME = packageName;
 const PATHS = {
   entryPoint: resolve(__dirname, 'src/index.ts'),
   umd: resolve(__dirname, 'umd'),

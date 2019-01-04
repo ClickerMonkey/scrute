@@ -8,9 +8,16 @@ import { observe, isObservable, isObserved } from './observe';
 
 
 
+/**
+ * The handler to pass to the Proxy constructor.
+ */
+export const handler =
+{
 
-export const handler = {
-
+  /**
+   * Intercepts the property getting so any watch functions can gather its list
+   * of dependencies.
+   */
   get (target: any, prop: PropertyKey, _reciever: any)
   {
     let val: any = target[ prop ];
@@ -43,6 +50,9 @@ export const handler = {
     return handleWatching( target, prop, val, obs );
   },
 
+  /**
+   * Intercepts the property setting so all dependent watchers are notified,
+   */
   set (target: any, prop: PropertyKey, value: any, _reciever: any): boolean
   {
     if (value !== target[ prop ])
@@ -51,17 +61,21 @@ export const handler = {
 
       const obs: Observer = target[ PROPERTY ] as Observer;
 
-      obs.notify( prop );
+      obs.notify( prop, true );
     }
 
     return true;
   },
 
+  /**
+   * Intercepts the property delete operator so all dependent watchers no longer
+   * listen to changes.
+   */
   deleteProperty (target: any, prop: PropertyKey): boolean
   {
     const obs: Observer = target[ PROPERTY ] as Observer;
 
-    obs.destroy( prop );
+    obs.remove( prop );
 
     return true;
   }
@@ -69,7 +83,11 @@ export const handler = {
 };
 
 
-
+/**
+ * If a property on an object contains an observable object/array which is not
+ * yet being observered - it is replaced with a proxy. The value of the property
+ * is returned.
+ */
 function handleWatching (target: any, prop: PropertyKey, val: any, obs: Observer): any
 {
   const dep: Dependency = obs.dep( prop );
@@ -84,6 +102,10 @@ function handleWatching (target: any, prop: PropertyKey, val: any, obs: Observer
   return val;
 }
 
+/**
+ * Returns a function which ensures when its called that all items and the
+ * length of the array is watched by any live watchers.
+ */
 function handleArrayIteration (target: any[], val: Function, obs: Observer): () => any
 {
   return function()
@@ -101,30 +123,40 @@ function handleArrayIteration (target: any[], val: Function, obs: Observer): () 
   };
 }
 
-function handleArrayChange (target: any, val: Function, obs: Observer): () => any
+/**
+ * Returns a function which notifies any watched functions of changes after a
+ * mutating array operation is executed.
+ */
+function handleArrayChange (target: any[], val: Function, obs: Observer): () => any
 {
   return function ()
   {
     const copy = target.slice();
     const result = val.apply( target, arguments );
     const max: number = Math.max( copy.length, target.length );
+    let deepNotified: boolean = false;
 
     for (let i = 0; i < max; i++)
     {
       if (copy[i] !== target[i])
       {
-        obs.notify( i );
+        deepNotified = deepNotified || obs.notify( i );
       }
 
       if (i >= target.length)
       {
-        obs.destroy( i );
+        obs.remove( i );
       }
     }
 
     if (target.length !== copy.length)
     {
-      obs.notify( 'length' );
+      deepNotified = deepNotified || obs.notify( 'length' );
+    }
+
+    if (deepNotified && obs.parent)
+    {
+      obs.parent.notify( true );
     }
 
     return result;

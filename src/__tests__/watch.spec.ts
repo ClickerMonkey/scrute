@@ -1,6 +1,6 @@
 // import { describe, it, expect } from 'jest';
 
-import { watch, observe } from '../index'
+import { watch, observe, unobserve } from '../index'
 
 describe('watch', () => {
 
@@ -29,6 +29,58 @@ describe('watch', () => {
     a.x = 45;
 
     expect(w.result).toBe(22);
+  })
+
+  it('unobserve', () =>
+  {
+    let a = observe({
+      x: 34,
+      y: { z: 56 },
+      h: () => {}
+    });
+
+    let w = watch(() => a.x + a.y.z);
+
+    a.x = 12;
+
+    expect(w.result).toBe(68);
+
+    a.y.z = 10;
+
+    expect(w.result).toBe(22);
+
+    unobserve( a, true, false );
+
+    a.y.z = 20;
+
+    expect(w.result).toBe(22);
+  })
+
+  it('unobserve destroy', () =>
+  {
+    let a = observe({
+      x: 34,
+      y: { z: 56 },
+      h: () => {}
+    });
+
+    let w = watch(() => a.x + a.y.z);
+
+    a.x = 12;
+
+    expect(w.result).toBe(68);
+
+    a.y.z = 10;
+
+    expect(w.result).toBe(22);
+
+    unobserve( a, true, true );
+
+    expect(() => {
+
+      a.y.z = 20;
+
+    }).toThrow();
   })
 
   it('is not circular', () =>
@@ -142,6 +194,58 @@ describe('watch', () => {
     a.push(1);
 
     expect(w.result).toBe('5,12,34,89');
+  })
+
+  it('deep', () =>
+  {
+    let a = <any>observe({
+      version: {
+        major: 0,
+        minor: 1,
+        patch: 0
+      }
+    });
+
+    let w = watch(() => JSON.stringify(a.version), {deep: true});
+    let times: number = 0;
+
+    w.onResult = () => times++;
+
+    expect(w.result).toBe('{"major":0,"minor":1,"patch":0}');
+    expect(times).toBe(0);
+
+    a.version.major = 1;
+
+    expect(w.result).toBe('{"major":1,"minor":1,"patch":0}');
+    expect(times).toBe(2);
+
+    a.version.newprop = 'hello';
+
+    expect(w.result).toBe('{"major":1,"minor":1,"patch":0,"newprop":"hello"}');
+    expect(times).toBe(3);
+  })
+
+  it('cyclical', () =>
+  {
+    let a = <any>observe({
+      x: 1, y: 2, children: [
+        {x: 3, y: 4, children: []},
+        {x: 5, y: 6, children: [
+          {x: 7, y: 8, children: []}
+        ]}
+      ]
+    });
+
+    let w = watch(() => a.children.reduce(
+      (accum: number, curr: any) => accum + curr.x,
+      0
+    ));
+
+    expect(w.result).toBe(8);
+
+    a.children.push(a);
+
+    expect(w.result).toBe(9);
   })
 
   function asc (a: number, b: number): number

@@ -11,9 +11,9 @@
 ## Example
 
 ```javascript
-// when using in plain JS, Scrute.observe, Scrute.watch, and Scrute.computed are available.
+// when using in plain JS, scrute.observe, scrute.unobserve, scrute.watch, and scrute.computed are available.
 
-import { observe, watch, computed } from 'scrute';
+import { observe, unobserve, watch, computed } from 'scrute';
 
 var data = observe({
   name: 'scrute',
@@ -55,6 +55,10 @@ data.version.major = 1;
 
 // obj.version = '1.0.1';
 
+// data will no longer be observable
+
+unobserve( data );
+
 ```
 
 ## API
@@ -62,6 +66,13 @@ data.version.major = 1;
 ### observe ( objectOrArray )
 
 Given an object or an array this returns a value which can be observed for changes by [watch](#watch) and [computed](#computed). You must use the reference returned by this function.
+
+### unobserve ( objectOrArray, deep = false, destroy = true )
+
+Given an object or an array this makes it unobservable, optionally doing the same to all descendants and optionally recycling the objects making them unusable.
+
+- `deep`: If true all descendants which have observers also are made unobservable.
+- `destroy`: Makes the object or array unusable and recycles it.
 
 ### watch ( func, { deep = false, immediate = true } )
 

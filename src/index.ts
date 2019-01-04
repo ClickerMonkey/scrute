@@ -10,6 +10,7 @@ import { Link } from './Link';
 import { handler } from './handler';
 import { watch, WatchOptions } from './watch';
 import { observe, isObservable, isObserved, ObserveOptions } from './observe';
+import { unobserve } from './unobserve';
 import { computed } from './computed';
 
 
@@ -24,5 +25,6 @@ export {
   handler,
   watch, WatchOptions,
   observe, isObservable, isObserved, ObserveOptions,
+  unobserve,
   computed
 };

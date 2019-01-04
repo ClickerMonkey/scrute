@@ -1,6 +1,13 @@
 
+/**
+ * The hidden property which stores the reference to the Observer for an object.
+ */
 export const PROPERTY = '$obs';
 
+/**
+ * This is a map of array functions which modify the contents of an array. When
+ * this happens the observed array is checked for referential and length changes.
+ */
 export const ARRAY_CHANGES = {
   'pop': 1,
   'push': 1,
@@ -11,6 +18,11 @@ export const ARRAY_CHANGES = {
   'sort': 1,
 };
 
+/**
+ * This is a map of array functions which can return different results when the
+ * array is modified with the above functions. When these functions are called
+ * the watch function observes all items in the array and it's length.
+ */
 export const ARRAY_ITERATIONS = {
   'concat': 1,
   'every': 1,

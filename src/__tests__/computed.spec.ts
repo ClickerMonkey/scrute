@@ -32,4 +32,42 @@ describe('watch', () => {
     expect(a.result).toBe(22);
   })
 
+  it('lazy', () =>
+  {
+    let a = <any>observe({
+      name: 'scrute',
+      version: {
+        major: 0,
+        minor: 0,
+        patch: 1
+      }
+    });
+
+    const w = computed( a, 'v', () =>
+      a.version.major + '.' + a.version.minor + '.' + a.version.patch
+    );
+
+    let times = 0;
+
+    w.onResult = () => times++;
+
+    expect(times).toBe(0);
+
+    expect(a.v).toBe('0.0.1');
+
+    expect(times).toBe(1);
+
+    expect(a.v).toBe('0.0.1');
+
+    expect(times).toBe(1);
+
+    a.version.minor = 2;
+
+    expect(times).toBe(1);
+
+    expect(a.v).toBe('0.2.1');
+
+    expect(times).toBe(2);
+  })
+
 })
