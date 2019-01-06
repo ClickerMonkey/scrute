@@ -50,6 +50,18 @@ export class Node<T>
   }
 
   /**
+   * Returns the items in this list as an array.
+   */
+  public toArray (): T[]
+  {
+    let out: T[] = [];
+
+    this.forEach( item => out.push(item) );
+
+    return out;
+  }
+
+  /**
    * Inserts this Node after the given node.
    *
    * @param prev The node to insert this Node after.

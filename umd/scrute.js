@@ -165,6 +165,14 @@ var Node = /** @class */ (function () {
         return index;
     };
     /**
+     * Returns the items in this list as an array.
+     */
+    Node.prototype.toArray = function () {
+        var out = [];
+        this.forEach(function (item) { return out.push(item); });
+        return out;
+    };
+    /**
      * Inserts this Node after the given node.
      *
      * @param prev The node to insert this Node after.
@@ -237,7 +245,8 @@ var Dependency_Dependency = /** @class */ (function () {
     Dependency.prototype.notify = function (notifyParent) {
         if (notifyParent === void 0) { notifyParent = false; }
         var deep = false;
-        this.links.forEach(function (link) {
+        // We need to iterate over a copy, otherwise it could get stuck in an infinite loop.
+        this.links.toArray().forEach(function (link) {
             link.watcher.notify();
             deep = deep || link.watcher.deep;
         });

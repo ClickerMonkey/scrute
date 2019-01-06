@@ -1,6 +1,6 @@
 {
   "name": "scrute",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A TypeScript/JS library for observing changes and adding computed properties",
   "main": "umd/scrute.js",
   "module": "lib/index.js",

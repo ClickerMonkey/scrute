@@ -44,7 +44,8 @@ export class Dependency
   {
     let deep: boolean = false;
 
-    this.links.forEach(link =>
+    // We need to iterate over a copy, otherwise it could get stuck in an infinite loop.
+    this.links.toArray().forEach(link =>
     {
       link.watcher.notify()
 

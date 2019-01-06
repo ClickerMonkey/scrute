@@ -248,6 +248,29 @@ describe('watch', () => {
     expect(w.result).toBe(9);
   })
 
+  it('deep json', () =>
+  {
+    let data = observe({
+      input: 'Hello World'
+    });
+
+    let w0 = watch( () => JSON.stringify(data), { deep: true } );
+    let w1 = watch( () => data.input );
+
+    expect(w0.result).toBe('{"input":"Hello World"}');
+    expect(w1.result).toBe('Hello World');
+
+    data['input'] = 'Changed!';
+
+    expect(w0.result).toBe('{"input":"Changed!"}');
+    expect(w1.result).toBe('Changed!');
+
+    data.input = 'Changed Again';
+
+    expect(w0.result).toBe('{"input":"Changed Again"}');
+    expect(w1.result).toBe('Changed Again');
+  })
+
   function asc (a: number, b: number): number
   {
     return a - b;
