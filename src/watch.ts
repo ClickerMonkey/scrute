@@ -1,5 +1,5 @@
 
-import { Watcher } from './Watcher'
+import { Watcher, WatchExpression } from './Watcher'
 
 
 
@@ -19,6 +19,11 @@ export interface WatchOptions
    * but also nested values.
    */
   deep?: boolean;
+
+  /**
+   * A callback to invoke when the watched values change.
+   */
+  onResult?: WatchExpression;
 }
 
 
@@ -35,9 +40,9 @@ export interface WatchOptions
  *    values change, but also nested values.
  * @returns A new instance of Watcher.
  */
-export function watch (expr: () => any, { immediate = true, deep = false }: WatchOptions = {}): Watcher
+export function watch (expr: WatchExpression, { immediate = true, deep = false, onResult }: WatchOptions = {}): Watcher
 {
-  const watcher = new Watcher( expr, immediate, deep );
+  const watcher = new Watcher( expr, immediate, deep, onResult );
 
   watcher.update();
 

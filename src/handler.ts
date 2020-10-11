@@ -20,7 +20,7 @@ export const handler =
    */
   get (target: any, prop: PropertyKey, _reciever: any)
   {
-    let val: any = target[ prop ];
+    const val: any = target[ prop ];
 
     if (prop === PROPERTY)
     {

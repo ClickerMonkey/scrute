@@ -13,7 +13,7 @@ export const liveWatchers: Watcher[] = [];
  * The loose definition for a watched function. It could return a value, or
  * nothing. Any returned value is stored in the Watcher in the result property.
  */
-export type WatchExpression = () => any;
+export type WatchExpression = (watcher: Watcher) => any;
 
 
 /**
@@ -38,11 +38,12 @@ export class Watcher
    * Creates a new Watcher given an expression, if it's immediate, and if the
    * watches are deep.
    */
-  public constructor (expression: WatchExpression, immediate: boolean = true, deep: boolean = false)
+  public constructor (expression: WatchExpression, immediate: boolean = true, deep: boolean = false, onResult?: WatchExpression)
   {
     this.expression = expression;
     this.immediate = immediate;
     this.deep = deep;
+    this.onResult = onResult;
     this.dirty = false;
     this.paused = false;
     this.evaluating = false;
@@ -89,7 +90,7 @@ export class Watcher
 
     try
     {
-      this.result = this.expression();
+      this.result = this.expression(this);
     }
     finally
     {
@@ -101,7 +102,7 @@ export class Watcher
       {
         try
         {
-          this.onResult();
+          this.onResult(this);
         }
         finally
         {

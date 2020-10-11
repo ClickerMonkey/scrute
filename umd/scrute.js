@@ -281,12 +281,13 @@ var Watcher_Watcher = /** @class */ (function () {
      * Creates a new Watcher given an expression, if it's immediate, and if the
      * watches are deep.
      */
-    function Watcher(expression, immediate, deep) {
+    function Watcher(expression, immediate, deep, onResult) {
         if (immediate === void 0) { immediate = true; }
         if (deep === void 0) { deep = false; }
         this.expression = expression;
         this.immediate = immediate;
         this.deep = deep;
+        this.onResult = onResult;
         this.dirty = false;
         this.paused = false;
         this.evaluating = false;
@@ -319,14 +320,14 @@ var Watcher_Watcher = /** @class */ (function () {
         this.off();
         liveWatchers.push(this);
         try {
-            this.result = this.expression();
+            this.result = this.expression(this);
         }
         finally {
             liveWatchers.pop();
             this.dirty = false;
             if (this.onResult) {
                 try {
-                    this.onResult();
+                    this.onResult(this);
                 }
                 finally {
                     this.evaluating = false;
@@ -676,8 +677,8 @@ var Observer_Observer = /** @class */ (function () {
  * @returns A new instance of Watcher.
  */
 function watch(expr, _a) {
-    var _b = _a === void 0 ? {} : _a, _c = _b.immediate, immediate = _c === void 0 ? true : _c, _d = _b.deep, deep = _d === void 0 ? false : _d;
-    var watcher = new Watcher_Watcher(expr, immediate, deep);
+    var _b = _a === void 0 ? {} : _a, _c = _b.immediate, immediate = _c === void 0 ? true : _c, _d = _b.deep, deep = _d === void 0 ? false : _d, onResult = _b.onResult;
+    var watcher = new Watcher_Watcher(expr, immediate, deep, onResult);
     watcher.update();
     return watcher;
 }
